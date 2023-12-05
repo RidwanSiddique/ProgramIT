@@ -2,6 +2,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2'
 import { AuthContext } from '../context/authContext'; 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -29,52 +30,98 @@ const SignIn = () => {
         // Clear email and password fields after successful login
         setEmail('');
         setPassword('');
-        alert('Login Successful', 'Welcome to ProgramIT!');
+        Swal.fire({
+          title: "Login Successful",
+          text: "Welcome to ProgramIT!",
+          icon: "success"
+        });
         // Navigate to the main navigator
         navigate('/home');
       } else {
         // Login failed, show an error message
-        alert('Login Failed', 'Invalid email or password. Please try again.');
+        Swal.fire({
+          title: "Login Failed",
+          text: "Invalid email or password. Please try again.",
+          icon: "error"
+        });
       }
     } catch (error) {
       // Handle specific errors and show appropriate alerts
       if (error.response) {
         if (error.response.status === 401) {
           // Unauthorized (wrong email or password)
-          alert('Login Failed', 'Email does not exist. Sign up to create an account.');
+          Swal.fire({
+            title: "Login Failed",
+            text: "Email does not exist. Sign up to create an account.",
+            icon: "error"
+          });
         } 
         else if (error.response.status === 408) {
           // empty email and password field.
-          alert('Login Failed', 'All Fields must be filled!');
+          Swal.fire({
+            title: "Login Failed",
+            text: "All Fields must be filled!",
+            icon: "error"
+          });
         }
         
         else if (error.response.status === 405) {
           // empty password field.
-          alert('Login Failed', 'Must enter a password!');
+          Swal.fire({
+            title: "Login Failed",
+            text: "Must enter a password!",
+            icon: "error"
+          });
         }
         else if (error.response.status === 406) {
           // empty email field.
-          alert('Login Failed', 'Must enter an email!');
+          Swal.fire({
+            title: "Login Failed",
+            text: "Must enter an email!",
+            icon: "error"
+          });
         }
         else if (error.response.status === 407) {
           // empty email field.
-          alert('Login Failed', 'Invalid email! Please enter a valid email.');
+          Swal.fire({
+            title: "Login Failed",
+            text: "Invalid email! Please enter a valid email.",
+            icon: "error"
+          });
         }
         else if (error.response.status === 409) {
           // empty email field.
-          alert('Login Failed', 'Invalid email or password! Please try again.');
+          Swal.fire({
+            title: "Login Failed",
+            text: "Invalid email or password! Please try again.",
+            icon: "error"
+          });
+          
         }
         else {
           // Other server errors
+          Swal.fire({
+            title: "Login Failed",
+            text: "Unknown Error",
+            icon: "question"
+          });
           console.log('Error Response Data:', JSON.stringify(error.response.data, null, 2));
           console.log('Error Request:', JSON.stringify(error.request, null, 2));
         }
       } else if (error.request) {
         // The request was made but no response was received
-        alert('Network Error', 'No response received from the server. Please check your network connection.');
+        Swal.fire({
+          title: "Network Error",
+          text: "No response received from the server. Please check your network connection.",
+          icon: "question"
+        });
       } else {
         // Something happened in setting up the request that triggered an Error
-        alert('Request Error', `Error setting up the request: ${error.message}`);
+        Swal.fire({
+          title: "Request Error",
+          text: `Error setting up the request: ${error.message}`,
+          icon: "error"
+        });
       }
     }
   };

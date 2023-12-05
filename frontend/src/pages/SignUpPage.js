@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2'
 import { AuthContext } from '../context/authContext';
 
 const SignUp = () => {
@@ -28,49 +29,98 @@ const SignUp = () => {
       if (response.data.message === 'passed') {
         // Registration successful, dispatch LOGIN action
         dispatch({ type: 'LOGIN', payload: { token: response.data.token } });
-
-        alert('Registration Successful','Please Sign In now!');
+        Swal.fire({
+          title: "Registration Successful",
+          text: "Welcome to ProgramIT!",
+          icon: "success"
+        });
+        //alert('Registration Successful','Please Sign In now!');
         // Navigate to a different screen (e.g., Home)
         navigate('/');
       } else {
         // registration failed, show an error message
-        alert('Login Failed', 'Please try again.');
+        Swal.fire({
+          title: "Registration Failed",
+          text: "Please try again.",
+          icon: "error"
+        });
+        //alert('Login Failed', 'Please try again.');
       }
     } catch (error) {
       // Handle specific errors and show appropriate alerts
       if (error.response) {
         if (error.response.status === 401) {
           // Unauthorized (wrong email or password)
-          alert('Sign Up Failed', 'Email already exists. Please Sign In!');
+          Swal.fire({
+            title: "Sign Up Failed",
+            text: "Email already exists. Please Sign In!",
+            icon: "error"
+          });
+          //alert('Sign Up Failed', 'Email already exists. Please Sign In!');
 
           navigate('/');
         } 
         else if (error.response.status === 400) {
           // empty email and password field.
-          alert('Sign Up Failed', 'All Fields must be filled!');
+          Swal.fire({
+            title: "Sign Up Failed",
+            text: "All Fields must be filled!",
+            icon: "error"
+          });
+          //alert('Sign Up Failed', 'All Fields must be filled!');
         }
         else if (error.response.status === 405) {
           // empty password field.
-          alert('Sign Up Failed', 'Must enter a password!');
+          Swal.fire({
+            title: "Sign Up Failed",
+            text: "Must enter a password!",
+            icon: "error"
+          });
+          //alert('Sign Up Failed', 'Must enter a password!');
         }
         else if (error.response.status === 406) {
           // empty email field.
-          alert('Sign Up Failed', 'Must enter an email!');
+          Swal.fire({
+            title: "Sign Up Failed",
+            text: "Must enter an email!",
+            icon: "error"
+          });
+          //alert('Sign Up Failed', 'Must enter an email!');
         }
         else if (error.response.status === 407) {
           // empty email field.
-          alert('Sign Up Failed', 'Invalid email! Please enter a valid email.');
+          Swal.fire({
+            title: "Sign up Failed",
+            text: "Invalid email or password! Please try again.",
+            icon: "error"
+          });
+          //alert('Sign Up Failed', 'Invalid email! Please enter a valid email.');
         }
         else {
           // Other server errors
-          alert('Server Error', `Server responded with an error: ${error.response.data}`);
+          Swal.fire({
+            title: "Server Error",
+            text: `Server responded with an error: ${error.response.data}`,
+            icon: "error"
+          });
+          //alert('Server Error', `Server responded with an error: ${error.response.data}`);
         }
       } else if (error.request) {
         // The request was made but no response was received
-        alert('Network Error', 'No response received from the server. Please check your network connection.');
+        Swal.fire({
+          title: "Network Error",
+          text: "No response received from the server. Please check your network connection.",
+          icon: "question"
+        });
+        //alert('Network Error', 'No response received from the server. Please check your network connection.');
       } else {
         // Something happened in setting up the request that triggered an Error
-        alert('Request Error', `Error setting up the request: ${error.message}`);
+        Swal.fire({
+          title: "Request Error",
+          text: `Error setting up the request: ${error.message}`,
+          icon: "question"
+        });
+        //alert('Request Error', `Error setting up the request: ${error.message}`);
       }
   
       console.error('Error:', error);
