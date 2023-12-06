@@ -18,6 +18,7 @@ const CreatePost = () => {
     try {
       const response = await axios.get("http://localhost:8080/programit/allQuestions");
       setData(response.data);
+      console.log('data:', data);
     } catch (error) {
       console.log(error);
     }
@@ -45,6 +46,7 @@ const CreatePost = () => {
       formData.append("questionBody", question.body);
     
       try {
+        console.log("User: ", user)
         await axios.post(`http://localhost:8080/programit/askQuestion/${user.userId}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -55,6 +57,7 @@ const CreatePost = () => {
         console.log('File uploaded:', file);
         setQuestion({ title: '', body: '' });
         setFile(null);
+        fetchData();
       } catch (error) {
         console.log(error);
       }

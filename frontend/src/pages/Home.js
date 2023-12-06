@@ -1,76 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
+import axios from 'axios';
 import '../styles/Home.css'; // Import the CSS file for styling
 
 const Home = () => {
-const [searchExpanded, setSearchExpanded] = useState(false);
-const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [questions, setQuestions] = useState([]);
 
-    // Mock data for questions
-    const questions = [
-        { id: 1, title: 'Question 1', answers: ['Answer 1', 'Answer 2'] },
-        { id: 2, title: 'Question 2', answers: ['Answer 3', 'Answer 4'] },
-        // ... More questions
-    ];
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-    const handleSearchClick = () => {
-        setSearchExpanded(!searchExpanded);
-    };
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/programit/allQuestions");
+      setQuestions(response.data);
+      console.log("Question:", questions)
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    const handleQuestionClick = (question) => {
-        setSelectedQuestion(question);
-    };
-
-    return (
-        <div className="home-container">
-        <header>
-            <div className="search-bar">
-            <input
-                type="text"
-                placeholder="Search"
-                className={`search-input ${searchExpanded ? 'expanded' : ''}`}
-            />
-            <FaSearch className="search-icon" onClick={handleSearchClick} />
-            </div>
-            <nav>
-            <ul className="navigation-tabs">
-                <li>Home</li>
-                <li>Questions</li>
-                <li>Profile</li>
-                {/* Add more navigation tabs */}
-            </ul>
-            </nav>
-            <div className="app-name">ProgramIT</div>
-        </header>
-        <div className="content">
-            <div className="questions-sidebar">
-            {questions.map((question) => (
-                <div
-                key={question.id}
-                className={`question ${selectedQuestion === question ? 'selected' : ''}`}
-                onClick={() => handleQuestionClick(question)}
-                >
-                {question.title}
-                </div>
-            ))}
-            </div>
-            <div className="main-body">
-            {selectedQuestion ? (
-                <div>
-                <h2>{selectedQuestion.title}</h2>
-                <ul>
-                    {selectedQuestion.answers.map((answer, index) => (
-                    <li key={index}>{answer}</li>
-                    ))}
-                </ul>
-                </div>
-            ) : (
-                <div className="default-message">Click on a question to view its details</div>
-            )}
-            </div>
+  return (
+    <div className="home-container">
+      <header>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search"
+            className="search-input"
+          />
+          <FaSearch className="search-icon" />
         </div>
-        </div>
-    );
-    };
+        <div className="app-name">ProgramIT</div>
+      </header>
+      <div className="content">
+  {questions.map((question) => (
+    <div key={question._id} className="question-container">
+      <div className="question">
+        <h3>{question.questionTitle}</h3>
+        <p>{question.questionBody}</p>
+        <p>Created at: {question.askedOn}</p>
+        <p>User: {question.userPosted}</p>
+      </div>
+    </div>
+  ))}
+</div>
+    </div>
+  );
+};
 
-    export default Home;
+export default Home;
