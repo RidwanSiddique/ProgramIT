@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt");
 const validator = require("validator");
 const fs = require('fs');
 const path = require('path');
+const { MongoClient } = require("mongodb");
+const { Readable } = require("stream");
 const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "3d" });
 };
@@ -161,12 +163,6 @@ const registerUser = async (req, res) => {
   const hash = await bcrypt.hash(password, salt);
 
   try {
-    const role = "user"; // Default role for regular users
-
-    // Check if the email is for the system administrator
-    if (email === "admin@admin.com") {
-      role = "admin"; // Set role to "admin" for the system administrator
-    }
     const user = await User.create({
       firstName,
       lastName,
@@ -226,6 +222,10 @@ const userProfile = async (req, res) => {
       const userId = req.params.userId;
       // Find the user by their user ID
       const user = await User.findById(userId);
+
+      if(user.email === 'admin@admin.com'){
+        await User.updateOne({ _id: user._id }, { $set: { role: 'admin' } });
+      }
       if (!user) {
         return res.status(401).json({
           success: false,
@@ -285,7 +285,6 @@ const updateProfile = async (req, res) => {
       lastName: user.lastName,
       email: user.email,
       profileImage: user.profileImage,
-      teamId: user.teamId,
       success: true,
     });
   } catch (error) {
@@ -314,20 +313,40 @@ const updateUserProfileImage = async (req, res) => {
     const base64Image = req.body; // Since you are sending the image directly in the request body
 
     // Split the base64 string into the content type and the actual base64 string
-    const base64Data = base64Image.split(';base64,').pop();
+    const base64Data = base64Image.split(";base64,").pop();
 
-    // Create a buffer from the base64 string
-    const imageBuffer = Buffer.from(base64Data, 'base64');
+    // Convert the base64 string to a Readable stream
+    const stream = Readable.from([Buffer.from(base64Data, "base64")]);
 
-    // Define the local directory and file path where the image will be saved
-    const imageDirectory = path.join(__dirname, '../uploads');
-    const imagePath = path.join(imageDirectory, `profile_${userId}.jpg`);
+    // Connect to the MongoDB Atlas database
+    const client = new MongoClient(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    await client.connect();
 
-    // Save the image to the local directory
-    fs.writeFileSync(imagePath, imageBuffer);
+    // Access the GridFS bucket
+    const bucket = new client.db().collection("fs.files");
+
+    // Create a new document in the GridFS bucket
+    const uploadStream = bucket.openUploadStreamWithId(userId, `profile_${userId}.jpg`, {
+      contentType: "image/jpeg",
+    });
+
+    // Pipe the image stream to the GridFS upload stream
+    stream.pipe(uploadStream);
+
+    // Wait for the upload to finish
+    await new Promise((resolve, reject) => {
+      uploadStream.on("finish", resolve);
+      uploadStream.on("error", reject);
+    });
+
+    // Close the MongoDB connection
+    await client.close();
 
     // Save the file path in the database
-    user.profileImage = `uploads/profile_${userId}.jpg`;
+    user.profileImage = `profile_${userId}.jpg`;
     await user.save();
 
     res.status(200).json({

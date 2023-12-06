@@ -1,5 +1,16 @@
 const mongoose = require('mongoose');
 
+const replySchema = mongoose.Schema({
+  replyBody: String,
+  userReplied: String,
+  userId: String,
+  repliedOn: { 
+    type: Date, 
+    default: Date.now 
+  },
+  replies: [this], // Nest the replySchema within itself
+});
+
 const questionSchema = mongoose.Schema({
   questionTitle: {
     type: String,
@@ -45,6 +56,7 @@ const questionSchema = mongoose.Schema({
         type: Date, 
         default: Date.now 
       },
+      replies: [replySchema],
     },
   ],
 })

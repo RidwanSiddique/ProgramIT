@@ -21,8 +21,6 @@ password: {
 },
 role: {
     type: String,
-    required: true,
-    enum: ['user', 'admin'],
     default: 'user',
 },
 profileImage: {

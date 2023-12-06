@@ -10,6 +10,7 @@ const { connectDB } = require('./database/dbInit');
 const answerRouter = require('./routes/Answers');
 const questionRouter = require('./routes/Questions');
 const userRouter = require('./routes/user');
+const replyRouter = require('./routes/Replies');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use((req, res, next) => {
 app.use('/programit', userRouter);
 app.use('/programit', answerRouter);
 app.use('/programit', questionRouter);
+app.use('/programit', replyRouter);
 
 connectDB()
     .then(() => {
