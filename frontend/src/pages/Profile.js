@@ -1,187 +1,198 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FontAwesome } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import { AuthContext } from '../context/authContext';
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExchange } from '@fortawesome/free-solid-svg-icons';
+import { AuthContext } from '../context/authContext'; 
 import axios from 'axios';
 
 const Profile = () => {
-const [firstName, setFirstName] = useState('');
-const [lastName, setLastName] = useState('');
-const [email, setEmail] = useState('');
-const [userImageUri, setUserImageUri] = useState(null);
-const [profileImage, setProfileImage] = useState(null);
-const { user, dispatch } = useContext(AuthContext);
-const navigation = useNavigation();
-useEffect(() => {
-  // Fetch user data when the component mounts
-  fetchUserData();
-}, []);
-
-const fetchUserData = async () => {
-  try {
-    // Make a request to fetch user data
-    const response = await axios.get(`http://localhost:8080/sportSync/user/${user.userId}`, {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    });
-    console.log("User data response:", response.data);
-    // Update the state with the fetched user data
-    if (response.data.success) {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
+  const [userImageUri, setUserImageUri] = useState(null);
+  const { user, dispatch } = useContext(AuthContext);
+  const navigation = useNavigate();
+  useEffect(() => {
+    // Fetch user data when the component mounts
+    fetchUserData();
+  });
+  
+  const fetchUserData = async () => {
+    try {
+      // Make a request to fetch user data
+      const response = await axios.get(`http://localhost:8080/programit/user/${user.userId}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      console.log("User data response:", response.data);
       // Update the state with the fetched user data
-      const userData = response.data;
-      setFirstName(userData.firstName);
-      setLastName(userData.lastName);
-      setEmail(userData.email);
-      setUserImageUri(userData.profileImage);
-    } else {
-      console.error(`Failed to fetch user data. Server responded with status ${response.status}`);
-    }
-  } catch (error) {
-    console.error('Error fetching user data', error);
-  }
-};
-
-const handleUploadProfileImage = async () => {
-  try {
-    const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-    });
-    if (!result.canceled) {
-       // Make a request to the backend to update the profile image
-      const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
-      setProfileImage(base64Image);
-      const userId = user.userId;
-      console.log('image:', base64Image);
-      try {
-         // set user's profile image to the backend
-        const response = await axios.post(`http://localhost:3000/sportSync/user/${userId}/profile-image`, base64Image, {
-          headers: {
-            'Content-Type': 'text/plain',
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
-        
-         // If the update is successful, update the user's profile image locally
-        if (response.status === 200) {
-          setUserImageUri(result.assets[0].uri);
-        } else {
-          console.error(`Failed to update profile image. Server responded with status ${response.status}`);
-        }
-      } catch (error) {
-        console.error('Error updating profile image', error);
+      if (response.data.success) {
+        // Update the state with the fetched user data
+        const userData = response.data;
+        setFirstName(userData.firstName);
+        setLastName(userData.lastName);
+        setEmail(userData.email);
+        setUserImageUri(userData.profileImage);
+      } else {
+        console.error(`Failed to fetch user data. Server responded with status ${response.status}`);
       }
+    } catch (error) {
+      console.error('Error fetching user data', error);
     }
-  } catch (error) {
-    console.error('Error picking an image', error);
-  }
-} 
+  };
+  const handleUploadProfileImage = async () => {
+    try {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.onchange = async (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
 
-useEffect(() => {
-  // update user data on update profile button when the component mounts
-  handleSubmit();
-}, []);
-const handleSubmit = async () => {
-  // Construct the user's profile data as a JSON object
-  const profileData = {
-    firstName,
-    lastName,
-    email,
-    profileImage: profileImage ? profileImage : null,
+        reader.onload = async (event) => {
+          const base64Image = event.target.result;
+          setProfileImage(base64Image);
+          // Make a request to the backend to update the profile image
+          const formData = new FormData();
+          formData.append("profileImage", base64Image);
+
+          const config = {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${user.token}`,
+            },
+          };
+
+          try {
+            const response = await axios.post(
+              `http://localhost:8080/programit/user/${user.userId}/profile-image`,
+              formData,
+              config
+            );
+
+            if (response.status === 200) {
+              // If the update is successful, update the user's profile image locally
+              setUserImageUri(base64Image);
+            } else {
+              console.error(
+                `Failed to update profile image. Server responded with status ${response.status}`
+              );
+            }
+          } catch (error) {
+            console.error("Error updating profile image", error);
+          }
+        };
+
+        reader.readAsDataURL(file);
+      };
+
+      fileInput.click();
+    } catch (error) {
+      console.error("Error selecting profile image", error);
+    }
+  };
+  useEffect(() => {
+    // update user data on update profile button when the component mounts
+    handleSubmit();
+  });
+  const handleSubmit = async () => {
+    // Construct the user's profile data as a JSON object
+    const profileData = {
+      firstName,
+      lastName,
+      email,
+      profileImage: profileImage ? profileImage : null,
+    };
+  
+    try {
+      // Send a POST request to your server's API endpoint for updating the user profile
+      const response = await axios.post(`http://localhost:8080/programit/user/updateProfile/${user.userId}`, profileData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+  
+      // Check the status code of the server's response
+      if (response.data.success) {
+        // If the status code indicates success, update the user's information in your app's state
+        // For example, if you're using React Context for state management:
+        // dispatch({ type: 'UPDATE_PROFILE', payload: profileData });
+        console.log('Profile updated successfully');
+      } else {
+        // If the status code indicates an error, display an error message to the user
+        console.log('Error in profile:', response.data.message);
+      }
+    } catch (error) {
+      // Handle any errors that occurred when making the request
+      console.error('Error updating profile:', error);
+    }
+  };
+  
+  const logout = async () => {
+    
+    try {
+      // Dispatch the LOGOUT action to update the global state
+      dispatch({ type: 'LOGOUT' });
+      // Redirect to the login page or any other desired route after successful logout
+      navigation.navigate('/signin'); // Replace 'Login' with the name of your login screen
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
-  try {
-    // Send a POST request to your server's API endpoint for updating the user profile
-    const response = await axios.post(`http://localhost:3000/sportSync/user/updateProfile/${user.userId}`, profileData, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.token}`,
-      },
-    });
-
-    // Check the status code of the server's response
-    if (response.data.success) {
-      // If the status code indicates success, update the user's information in your app's state
-      // For example, if you're using React Context for state management:
-      // dispatch({ type: 'UPDATE_PROFILE', payload: profileData });
-      console.log('Profile updated successfully');
-    } else {
-      // If the status code indicates an error, display an error message to the user
-      console.log('Error in profile:', response.data.message);
-    }
-  } catch (error) {
-    // Handle any errors that occurred when making the request
-    console.error('Error updating profile:', error);
-  }
-};
-
-const logout = async () => {
+  return (
+    <div style={styles.container}>
+      <div style={styles.userImageContainer}>
+        <img src={userImageUri} alt="Profile" style={styles.userImage} />
+        <button onClick={handleUploadProfileImage} style={styles.changeImageIcon}>
+          <FontAwesomeIcon icon={faExchange} size="lg" color="black" />
+        </button>
+      </div>
   
-  try {
-    // Clear user data from AsyncStorage
-    await AsyncStorage.removeItem('user');
-    // Dispatch the LOGOUT action to update the global state
-    dispatch({ type: 'LOGOUT' });
-    // Redirect to the login page or any other desired route after successful logout
-    navigation.navigate('SignIn'); // Replace 'Login' with the name of your login screen
-  } catch (error) {
-    console.error('Logout error:', error);
-  }
-};
-return (
-  <View style={styles.container}>
-    <View style={styles.userImageContainer}>
-      <Image source={{ uri: userImageUri }} 
-      defaultSource={require('./image.png')} 
-      style={styles.userImage} />
-      <TouchableOpacity onPress={handleUploadProfileImage} style={styles.changeImageIcon}>
-        <FontAwesome name="exchange" size={24} color="black" />
-      </TouchableOpacity>
-    </View>
-
-    {/* Display user information */}
-    <Text style={styles.inputLabel}>First Name</Text>
-    <TextInput
-      style={styles.input}
-      placeholder="First Name"
-      value={firstName}
-      onChangeText={setFirstName}
-    />
-
-    <Text style={styles.inputLabel}>Last Name</Text>
-    <TextInput
-      style={styles.input}
-      placeholder="Last Name"
-      value={lastName}
-      onChangeText={setLastName}
-    />
-
-    <Text style={styles.inputLabel}>Email</Text>
-    <TextInput
-      style={styles.input}
-      placeholder="Email"
-      value={email}
-      onChangeText={setEmail}
-    />
-
-    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-      <Text style={styles.buttonText}>Update Profile</Text>
-    </TouchableOpacity>
-
-    <TouchableOpacity style={styles.button} onPress={logout}>
-      <Text style={styles.buttonText}>Logout</Text>
-    </TouchableOpacity>
-  </View>
-);
+      {/* Display user information */}
+      <label style={styles.inputLabel}>First Name</label>
+      <input
+        type="text"
+        style={styles.input}
+        placeholder="First Name"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+      />
+  
+      <label style={styles.inputLabel}>Last Name</label>
+      <input
+        type="text"
+        style={styles.input}
+        placeholder="Last Name"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+      />
+  
+      <label style={styles.inputLabel}>Email</label>
+      <input
+        type="email"
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+  
+      <button style={styles.button} onClick={handleSubmit}>
+        Update Profile
+      </button>
+  
+      <button style={styles.button} onClick={logout}>
+        Logout
+      </button>
+    </div>
+  );
 };
 
-const styles = StyleSheet.create({
+
+const styles = ({
   container: {
     flex: 1,
     alignItems: 'center',
