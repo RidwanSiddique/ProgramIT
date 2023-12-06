@@ -31,7 +31,7 @@ const SignUp = () => {
         dispatch({ type: 'LOGIN', payload: { token: response.data.token } });
         Swal.fire({
           title: "Registration Successful",
-          text: "Welcome to ProgramIT!",
+          text: "Sign In Now!",
           icon: "success"
         });
         //alert('Registration Successful','Please Sign In now!');
