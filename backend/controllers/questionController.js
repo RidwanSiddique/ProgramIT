@@ -51,6 +51,7 @@ const deleteQuestion = async (req, res) => {
 const showQuestionDetails = async (req, res) => {
   const questionId = req.params.questionId;
   const userId = req.user._id;
+  const { answerBody } = req.body;
 
   try {
     // Find the question with the specified ID and user ID
@@ -63,24 +64,28 @@ const showQuestionDetails = async (req, res) => {
       });
     }
 
-    // Retrieve all the answers for the question
-    const answers = await question.populate("answers").execPopulate();
-    
-    // Retrieve all the replies for each answer
-    const populatedAnswers = await Promise.all(
-      answers.answers.map(async (answer) => {
-        const populatedAnswer = await answer.populate("replies").execPopulate();
-        return populatedAnswer;
-      })
-    );
+    // Create a new answer
+    const answer = {
+      answerBody,
+      userAnswered: userId,
+      userId,
+      answeredOn: Date.now(),
+      replies: [],
+    };
+
+    // Add the new answer to the question's answer array
+    question.answer.push(answer);
+
+    // Save the updated question
+    await question.save();
 
     res.status(200).json({
       success: true,
-      question: question,
-      answers: populatedAnswers,
+      message: "Answer added successfully",
+      question,
     });
   } catch (error) {
-    console.error("Error retrieving question details:", error);
+    console.error("Error adding answer:", error);
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };

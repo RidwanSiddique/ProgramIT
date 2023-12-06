@@ -26,6 +26,12 @@ role: {
 profileImage: {
     type: String, // Assuming you store the image URI as a string
 },
+questions: [
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Question',
+    },
+  ],
 }, {timestamps: true});
 
 module.exports = mongoose.model('User', userDB);
