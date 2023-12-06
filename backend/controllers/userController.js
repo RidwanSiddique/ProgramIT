@@ -161,11 +161,18 @@ const registerUser = async (req, res) => {
   const hash = await bcrypt.hash(password, salt);
 
   try {
+    const role = "user"; // Default role for regular users
+
+    // Check if the email is for the system administrator
+    if (email === "admin@admin.com") {
+      role = "admin"; // Set role to "admin" for the system administrator
+    }
     const user = await User.create({
       firstName,
       lastName,
       email,
       password: hash,
+      role,
     });
     // create a token
     const token = createToken(user._id);
@@ -180,7 +187,40 @@ const registerUser = async (req, res) => {
     res.status(400).json({ success: false, error: error.message });
   }
 };
+const removeUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
 
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if the logged-in user has the role of an admin
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to remove users",
+      });
+    }
+
+    // Remove the user from the database
+    await user.remove();
+
+    res.status(200).json({
+      success: true,
+      message: "User removed successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
 const userProfile = async (req, res) => {
   try {
       const userId = req.params.userId;
@@ -329,4 +369,5 @@ module.exports = {
   updateUserProfileImage,
   updateProfile,
   logout,
+  removeUser,
 };

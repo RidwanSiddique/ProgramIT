@@ -1,6 +1,6 @@
 // user.js
 const express = require('express');
-const { loginUser, registerUser, userProfile, userHome, updateUserProfileImage, updateProfile, logout } = require('../controllers/userController');
+const { loginUser, registerUser, userProfile, userHome, updateUserProfileImage, updateProfile, logout, removeUser } = require('../controllers/userController');
 const router = express.Router();
 const requireAuth = require('../middleware/requireAuth');
 // Public routes
@@ -11,7 +11,7 @@ router.get("/user/logout", logout)
 router.get('/user/:userId', requireAuth, userProfile);
 router.post('/user/updateProfile/:userId', requireAuth, updateProfile);
 router.get('/home/:userId', requireAuth, userHome);
-
+router.delete("/user/:userId", requireAuth, removeUser);
 // New route for updating the profile image
 router.post('/user/:userId/profile-image', requireAuth, updateUserProfileImage);
 

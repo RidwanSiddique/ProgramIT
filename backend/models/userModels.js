@@ -19,6 +19,12 @@ password: {
     type: String,
     required: true,
 },
+role: {
+    type: String,
+    required: true,
+    enum: ['user', 'admin'],
+    default: 'user',
+},
 profileImage: {
     type: String, // Assuming you store the image URI as a string
 },
