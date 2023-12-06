@@ -1,18 +1,28 @@
+require('dotenv').config();
 const Questions = require("../models/questionModels");
 const mongoose = require("mongoose");
 
 const askQuestion = async (req, res) => {
-  const postQuestionData = req.body
-  const postQuestion = new Questions(postQuestionData)
-
   try {
-    await postQuestion.save()
-    res.status(200).json('Question posted successfully')
+    
+    const { userId } = req.params;
+    const { questionTitle, questionBody } = req.body;
+    const uploadedFile = req.file ? req.file.path : '';
+    console.log(userId)
+    const question = new Questions({
+      questionTitle,
+      questionBody,
+      uploadedFile,
+      userPosted: userId,
+    });
+
+    const savedQuestion = await question.save();
+    res.status(201).json(savedQuestion);
   } catch (error) {
-    console.log(error)
-    res.status(409).json("Couldn't post a new question");
+    console.error('Error posting question:', error);
+    res.status(500).json({ error: 'Failed to post question' });
   }
-}
+};
 
 const getAllQuestions = async (req, res) => {
   try {
@@ -35,6 +45,43 @@ const deleteQuestion = async (req, res) => {
     res.status(200).json({ message: "Question successfully deleted..."});
   } catch (error) {
     res.status(404).json({ message: error.message });
+  }
+};
+
+const showQuestionDetails = async (req, res) => {
+  const questionId = req.params.questionId;
+  const userId = req.user._id;
+
+  try {
+    // Find the question with the specified ID and user ID
+    const question = await Questions.findOne({ _id: questionId, userId });
+
+    if (!question) {
+      return res.status(404).json({
+        success: false,
+        message: "Question not found for the logged-in user",
+      });
+    }
+
+    // Retrieve all the answers for the question
+    const answers = await question.populate("answers").execPopulate();
+    
+    // Retrieve all the replies for each answer
+    const populatedAnswers = await Promise.all(
+      answers.answers.map(async (answer) => {
+        const populatedAnswer = await answer.populate("replies").execPopulate();
+        return populatedAnswer;
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      question: question,
+      answers: populatedAnswers,
+    });
+  } catch (error) {
+    console.error("Error retrieving question details:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -92,4 +139,5 @@ module.exports={
   askQuestion,
   deleteQuestion,
   voteQuestion,
+  showQuestionDetails,
 }

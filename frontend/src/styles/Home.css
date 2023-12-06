@@ -1,0 +1,103 @@
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #f2f2f2;
+    border-radius: 20px;
+    padding: 5px 10px;
+    transition: width 0.3s ease-in-out;
+  }
+  
+  .search-input {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    margin-left: 10px;
+    width: 0;
+    transition: width 0.3s ease-in-out;
+  }
+  
+  .search-input.expanded {
+    width: 200px;
+  }
+  
+  .search-icon {
+    cursor: pointer;
+  }
+  
+  nav {
+    display: flex;
+    justify-content: center;
+    margin-right: 20px;
+  }
+  
+  .navigation-tabs {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navigation-tabs li {
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  
+  .app-name {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .content {
+    display: flex;
+    width: 100%;
+  }
+  
+  .questions-sidebar {
+    flex: 1;
+  }
+  
+  .question {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .question.selected {
+    background-color: #f2f2f2;
+  }
+  
+  .main-body {
+    flex: 3;
+  }
+  
+  .default-message {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  h2 {
+    margin-bottom: 10px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 5px;
+  }

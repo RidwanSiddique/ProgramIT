@@ -36,7 +36,7 @@ const SignIn = () => {
           icon: "success"
         });
         // Navigate to the main navigator
-        navigate('/profile');
+        navigate('/posts');
       } else {
         // Login failed, show an error message
         Swal.fire({

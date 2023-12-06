@@ -20,10 +20,6 @@ const questionSchema = mongoose.Schema({
     type: String,
     required: "Question must have a body"
   },
-  questionTags: {
-    type: [String],
-    required: "Question must have tags"
-  },
   noOfAnswers: {
     type: Number,
     default: 0
@@ -59,6 +55,9 @@ const questionSchema = mongoose.Schema({
       replies: [replySchema],
     },
   ],
+  uploadedFile: {
+    type: String, // Assuming you store the file URI as a string
+  },
 })
 
 module.exports = mongoose.model("Question", questionSchema);

@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Profile from './pages/Profile'; 
+import Posts from './pages/Post'
+import Questions from './pages/Questions';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 
@@ -24,6 +26,8 @@ const App = () => {
       <Route path="/signin" element={<SignInPage />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/posts" element={<Posts />} />
+      <Route path="/questions" element={<Questions />} />
       <Route path="/register" element={<SignUpPage />} />
     </Routes>
   );
