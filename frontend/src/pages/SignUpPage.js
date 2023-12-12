@@ -36,7 +36,7 @@ const SignUp = () => {
         });
         //alert('Registration Successful','Please Sign In now!');
         // Navigate to a different screen (e.g., Home)
-        navigate('/');
+        navigate('/signin');
       } else {
         // registration failed, show an error message
         Swal.fire({

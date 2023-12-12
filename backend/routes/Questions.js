@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.post('/askQuestion/:userId', auth, upload.single('file'), askQuestion);
 router.get('/allQuestions', getAllQuestions)
-router.get('/questionDetails/:questionId', auth, showQuestionDetails)
+router.get('/questionDetails/:questionId', auth,  showQuestionDetails)
 router.delete('/delete/:id', auth, deleteQuestion)
 router.patch("/vote/:id", auth, voteQuestion)
 

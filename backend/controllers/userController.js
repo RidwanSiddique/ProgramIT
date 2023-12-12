@@ -168,7 +168,6 @@ const registerUser = async (req, res) => {
       lastName,
       email,
       password: hash,
-      role,
     });
     // create a token
     const token = createToken(user._id);
@@ -234,7 +233,7 @@ const userProfile = async (req, res) => {
       }
       console.log('user info:', user);
   
-    
+      const uploadedFile = req.file ? req.file.path : '';
   
       res.status(200).json({
 
@@ -242,8 +241,9 @@ const userProfile = async (req, res) => {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          profileImage: user.profileImage,
+          uploadedFile,
           success: true,
+          role,
       });
     } catch (error) {
       res.status(500).json({

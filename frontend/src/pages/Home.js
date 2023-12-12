@@ -5,7 +5,7 @@ import '../styles/Home.css'; // Import the CSS file for styling
 
 const Home = () => {
   const [questions, setQuestions] = useState([]);
-
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   useEffect(() => {
     fetchData();
   }, []);
@@ -19,32 +19,36 @@ const Home = () => {
       console.log(error);
     }
   };
-
+  const handleSearchClick = () => {
+    setIsSearchExpanded(!isSearchExpanded);
+  };
   return (
     <div className="home-container">
       <header>
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search"
-            className="search-input"
-          />
+      <div className={`search-bar ${isSearchExpanded ? 'expanded' : ''}`} onClick={handleSearchClick}>
+        <input
+          type="text"
+          placeholder="Search"
+          className={`search-input ${isSearchExpanded ? 'expanded' : ''}`}
+        />
           <FaSearch className="search-icon" />
         </div>
         <div className="app-name">ProgramIT</div>
       </header>
       <div className="content">
-  {questions.map((question) => (
-    <div key={question._id} className="question-container">
-      <div className="question">
-        <h3>{question.questionTitle}</h3>
-        <p>{question.questionBody}</p>
-        <p>Created at: {question.askedOn}</p>
-        <p>User: {question.userPosted}</p>
+        <div className="questions-sidebar">
+          {questions.map((question) => (
+            <div key={question._id} className="question-container">
+              <div className="question">
+                <h3>{question.questionTitle}</h3>
+                <p>{question.questionBody}</p>
+                <p>Created at: {question.askedOn}</p>
+              
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  ))}
-</div>
     </div>
   );
 };

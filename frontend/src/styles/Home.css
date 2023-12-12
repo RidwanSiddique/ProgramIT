@@ -4,13 +4,16 @@
   align-items: center;
   padding: 20px;
 }
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   margin-bottom: 20px;
-  padding: 0 20px; /* Add padding to create space between left and right elements */
+  padding: 0 20px;
+  position: absolute;
+  top: 0;
 }
 
 .search-bar {
@@ -20,6 +23,8 @@
   border-radius: 20px;
   padding: 5px 10px;
   transition: width 0.3s ease-in-out;
+  margin-top: 20px;
+  cursor: pointer; /* Add cursor pointer */
 }
 
 .search-input {
@@ -39,43 +44,30 @@
   cursor: pointer;
 }
 
-nav {
-  display: flex;
-  justify-content: center;
-  margin-right: 20px;
-}
-
-.navigation-tabs {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.navigation-tabs li {
-  margin-right: 10px;
-  cursor: pointer;
-}
-
 .app-name {
   font-size: 24px;
   font-weight: bold;
-  margin-left: auto; /* Add auto margin to push app name to the right */
+  position: absolute;
+  top: 70px;
+  right: 20px;
 }
 
 .content {
   display: flex;
-  flex-direction: column; /* Update to vertical direction */
-  align-items: center; /* Center align vertically */
+  flex-direction: column;
+  align-items: center;
   width: 100%;
+  margin-top: 100px; /* Add margin-top to create space from top */
 }
 
 .questions-sidebar {
   flex: 1;
+  width: 50%; /* Set width to 50% */
+  align-self: center; /* Center align horizontally */
 }
 
 .question-container {
-  width: 100%; /* Adjust the width as needed */
+  width: 100%;
   margin-bottom: 20px;
 }
 
@@ -83,10 +75,10 @@ nav {
   padding: 10px;
   cursor: pointer;
   background-color: #f2f2f2;
-  max-width: 100%; /* Add maximum width */
-  overflow: hidden; /* Hide overflowing text */
-  text-overflow: ellipsis; /* Add ellipsis (...) for truncated text */
-  white-space: nowrap; /* Prevent wrapping of text */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .question.selected {
