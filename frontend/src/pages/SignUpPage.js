@@ -57,8 +57,6 @@ const SignUp = () => {
             icon: "error"
           });
           //alert('Sign Up Failed', 'Email already exists. Please Sign In!');
-
-          navigate('/');
         } 
         else if (error.response.status === 400) {
           // empty email and password field.
