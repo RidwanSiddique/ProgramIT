@@ -130,18 +130,6 @@ const Profile = () => {
       console.error('Error updating profile:', error);
     }
   };
-  
-  const logout = async () => {
-    
-    try {
-      // Dispatch the LOGOUT action to update the global state
-      dispatch({ type: 'LOGOUT' });
-      // Redirect to the login page or any other desired route after successful logout
-      navigation.navigate('/signin'); // Replace 'Login' with the name of your login screen
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
 
   return (
     <div style={styles.container}>
@@ -182,10 +170,6 @@ const Profile = () => {
   
       <button style={styles.button} onClick={handleSubmit}>
         Update Profile
-      </button>
-  
-      <button style={styles.button} onClick={logout}>
-        Logout
       </button>
     </div>
   );
