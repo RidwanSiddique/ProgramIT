@@ -25,7 +25,7 @@ Welcome to the **ProgramIT** project, where I've unleashed the power of the MERN
 1. **Clone the Repository**
    <br>
    \```
-   git clone https://github.com/your-username/reddit-clone.git
+   git clone https://github.com/RidwanSiddique/ProgramIT.git
    <br>
    cd reddit-clone
    \```
