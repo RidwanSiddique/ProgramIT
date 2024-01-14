@@ -23,25 +23,22 @@ Welcome to the **ProgramIT** project, where I've unleashed the power of the MERN
 ## 📦 Installation
 
 1. **Clone the Repository**
-   <br>
-   \```
+   ```bash
    git clone https://github.com/RidwanSiddique/ProgramIT.git
-   <br>
    cd reddit-clone
-   \```
+   ```
 3. **Install Dependencies**
-   <br>
-   \```
+   ```bash
    npm install
-   \```
+   ```
 5. **Environment Setup**
    - Create a `.env` file in the root directory.
    - Add the necessary environment variables: `MONGO_URI`, `SECRET_KEY`.
 
 6. **Run the Application**
-   \```
+   ```bash
    npm start
-   \```
+   ```
 
 ## 🔧 Configuration
 
